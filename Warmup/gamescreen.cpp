@@ -18,8 +18,6 @@ GameScreen::GameScreen()
 {
     Global::graphics.addMaterial("grass", "Resources/Images/grass.png", 0.3);
     Global::graphics.addMaterial("tile", "Resources/Images/tile.png", 0.9);
-    m_lights.push_back(make_shared<Light>(LightType::DIRECTIONAL, glm::normalize(glm::vec3(0, 1, 0)), glm::vec3(1, 0, 1)));
-    Global::graphics.setLights(m_lights);
 
     reset();
 
@@ -150,10 +148,14 @@ void GameScreen::reset() {
     Selector* root = new Selector(pathExists, jump);
     shared_ptr<AiComponent> enemy_ai = make_shared<AiComponent>(enemy_weak, root);
     enemy->addComponent<AiComponent>(enemy_ai);
-
-//    m_lights.push_back(std::make_shared<Light>(LightType::POINT, glm::vec3(1, -0.4, 0), glm::vec3(1, 1, 1)));
+    shared_ptr<Light> light = std::make_shared<Light>(LightType::POINT, glm::vec3(1, -0.4, 0), glm::vec3(1, 1, 1));
+    light->setType(LightType::POINT);
+    light->setPos(glm::vec3(0, 1, 0));
+    light->setColor(glm::vec3(0.9, 0, 0));
+    light->setAttenuation(glm::vec3(10,10,10));
+    m_lights.push_back(light);
     Global::graphics.clearLights();
-//    Global::graphics.setLights(m_lights);
+    Global::graphics.setLights(m_lights);
     // ADD PARTS TO WORLD
     m_gameWorld = make_shared<GameWorld>();
     m_gameWorld->addSystem<DrawSystem>(make_shared<DrawSystem>());

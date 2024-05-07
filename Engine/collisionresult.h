@@ -10,6 +10,7 @@ struct CollisionResult {
     std::vector<Collision> collisions;
     CollisionResult(const glm::vec3& _finalPos, const std::vector<Collision>& _collisions)
         : finalPos(_finalPos), collisions(_collisions) {}
+    CollisionResult(){}
 };
 
 #endif // COLLISIONRESULT_H
