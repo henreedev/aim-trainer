@@ -8,6 +8,8 @@ class Collision;
 struct CollisionResult {
     glm::vec3 finalPos;
     std::vector<Collision> collisions;
+    CollisionResult(const glm::vec3& _finalPos, const std::vector<Collision>& _collisions)
+        : finalPos(_finalPos), collisions(_collisions) {}
 };
 
 #endif // COLLISIONRESULT_H
