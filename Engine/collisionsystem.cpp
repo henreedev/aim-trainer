@@ -57,13 +57,20 @@ void CollisionSystem::update(float deltaTime) {
             std::shared_ptr<CollisionComponent> cc2 = gObj2->getComponent<CollisionComponent>();
             cc1->update(deltaTime);
             cc2->update(deltaTime);
-
-            cc1->collideMesh(cc2);
+            if (cc1->getEllipsoidCollider()) {
+                cc1->collideMesh(cc2);
+            }
         }
     }
 
     // Update uniform grid
-    m_uniformGrid.update(m_dynamicObjs);
+//    m_uniformGrid.update(m_dynamicObjs);
+    // Reset rays
+    for (int i = 0; i < m_dynamicObjs.size(); i++) {
+        std::shared_ptr<GameObject>& gObj = m_dynamicObjs[i];
+        std::shared_ptr<CollisionComponent> cc = gObj->getComponent<CollisionComponent>();
+        if (cc->getRay()) {cc->getRay()->reset(); cc->update(0);}
+    }
 
     // Ellipsoid-ellipsoid collisions
     for (int i = 0; i < m_dynamicObjs.size() - 1; i++) {
@@ -75,7 +82,11 @@ void CollisionSystem::update(float deltaTime) {
             cc1->update(deltaTime);
             cc2->update(deltaTime);
 //            if (cc1->getEllipsoidCollider()->canCollide(m_uniformGrid, cc2->getEllipsoidCollider())) {
+            if (cc1->getRay()) { cc1->getRay()->intersect(cc2->getEllipsoidCollider());}
+            else if (cc2->getRay()) { cc2->getRay()->intersect(cc1->getEllipsoidCollider());}
+            else {
                 cc1->collideEllipsoid(cc2);
+            }
 //                std::cout << "Uniform Grid Collision Test Accepted" << std::endl;
 //            } else {
 //                std::cout << "Uniform Grid Collision Test Ignored" << std::endl;

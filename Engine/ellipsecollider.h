@@ -44,9 +44,10 @@ public:
         return true;
     }
     Collision collideEllipsoid(std::shared_ptr<EllipseCollider>);
+    std::shared_ptr<TransformComponent> m_transform;
+    bool ignoreRaycast = false;
 protected:
 
-    std::shared_ptr<TransformComponent> m_transform;
     glm::vec3 m_lastPos;
     glm::vec3 m_pos;
     std::vector<std::vector<int>> m_gridIndices;

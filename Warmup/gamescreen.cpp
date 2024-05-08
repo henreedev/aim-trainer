@@ -54,6 +54,7 @@ void GameScreen::reset() {
     player->addComponent<CameraComponent>(cc);
 
     std::shared_ptr<EllipseCollider> collider = std::make_shared<EllipseCollider>(tc);
+    collider->ignoreRaycast = true;
     player->addComponent<CharacterControllerComponent>(make_shared<CharacterControllerComponent>(player_weak, 5.0, 7.0));
 
     shared_ptr<CollisionComponent> coc = make_shared<CollisionComponent>(player_weak, collider, false);
@@ -148,11 +149,21 @@ void GameScreen::reset() {
     Selector* root = new Selector(pathExists, jump);
     shared_ptr<AiComponent> enemy_ai = make_shared<AiComponent>(enemy_weak, root);
     enemy->addComponent<AiComponent>(enemy_ai);
+
+    // ADD RAYCAST
+    shared_ptr<GameObject> ray = make_shared<GameObject>();
+    weak_ptr<GameObject> ray_weak = ray;
+    std::shared_ptr<Ray> ray_collider = make_shared<Ray>(glm::vec3(0, 1, 0), glm::vec3(1.0, 0.0, 0.0));
+    shared_ptr<TransformComponent> ray_tc = make_shared<TransformComponent>(ray_weak, glm::vec3(0), 1.0f);
+    ray->addComponent<TransformComponent>(ray_tc);
+    shared_ptr<CollisionComponent> ray_coc = make_shared<CollisionComponent>(ray_weak, ray_collider);
+    ray->addComponent<CollisionComponent>(ray_coc);
+
     shared_ptr<Light> light = std::make_shared<Light>(LightType::POINT, glm::vec3(1, 0, 0), glm::vec3(1, 1, 1));
     light->setType(LightType::POINT);
     light->setPos(glm::vec3(0, 1, 0));
     light->setColor(glm::vec3(0.9, 0, 0));
-    light->setAttenuation(glm::vec3(0.001f,0.001f,0.001f));
+    light->setAttenuation(glm::vec3(0.002f,0.002f,0.002f));
     m_lights.push_back(light);
 //    Global::graphics.clearLights();
     Global::graphics.setLights(m_lights);
@@ -168,6 +179,7 @@ void GameScreen::reset() {
     m_gameWorld->addGameObject(ball);
 //    m_gameWorld->addGameObject(enemy);
     m_gameWorld->addGameObject(floor);
+    m_gameWorld->addGameObject(ray);
 
 }
 

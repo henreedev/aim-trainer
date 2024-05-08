@@ -25,6 +25,7 @@ bool areEqual(const glm::vec3& v1, const glm::vec3& v2) {
 
 void UniformGrid::update(std::vector<std::shared_ptr<GameObject>> gObjs) {
     for (auto& gObj : gObjs) {
+        if (!gObj->getComponent<CollisionComponent>()->getEllipsoidCollider()) {return;}
         std::shared_ptr<TransformComponent> transform = gObj->getComponent<TransformComponent>();
         glm::vec4 aabbMinHomo = glm::vec4(-0.5, -0.5, -0.5, 1);
         glm::vec4 aabbMaxHomo = glm::vec4(0.5, 0.5, 0.5, 1);

@@ -1,10 +1,12 @@
 #include "collisioncomponent.h"
+#include "Engine/cameracomponent.h"
 #include "Engine/charactercontrollercomponent.h"
 #include "Engine/collision.h"
 #include "Engine/cylindercollider.h"
 #include "Engine/gameobject.h"
 #include "Engine/transformcomponent.h"
 #include "Engine/ellipsecollider.h"
+#include "Engine/aisystem.h"
 
 CollisionComponent::CollisionComponent(std::weak_ptr<GameObject> parent, std::shared_ptr<CylinderCollider> collider, bool isStatic) :
     m_collider(collider), m_isStatic(isStatic)
@@ -30,6 +32,15 @@ CollisionComponent::CollisionComponent(std::weak_ptr<GameObject> parent, std::sh
     m_isStatic = true;
 }
 
+CollisionComponent::CollisionComponent(std::weak_ptr<GameObject> parent, std::shared_ptr<Ray> collider) {
+    m_parent = parent;
+    m_ray = collider;
+    m_isStatic = false;
+    if (parent.lock()->hasComponent<TransformComponent>()) {
+        m_transform = parent.lock()->getComponent<TransformComponent>();
+    }
+}
+
 
 
 void CollisionComponent::update(float deltaTime) {
@@ -38,6 +49,14 @@ void CollisionComponent::update(float deltaTime) {
     }
     if (m_ellCollider) {
         m_ellCollider->updatePos(m_transform->getPos());
+    }
+    if (m_ray) {
+//        std::cout << "bruh" << std::endl;
+        m_transform->setPos(AiSystem::player->getComponent<TransformComponent>()->getPos());
+        m_ray->p = m_transform->getPos();
+        if (AiSystem::player->hasComponent<CameraComponent>()) {
+            m_ray->d = AiSystem::player->getComponent<CameraComponent>()->getLook();
+        }
     }
 }
 
@@ -107,4 +126,8 @@ std::shared_ptr<CylinderCollider> CollisionComponent::getCollider() {
 
 std::shared_ptr<EllipseCollider> CollisionComponent::getEllipsoidCollider() {
     return m_ellCollider;
+}
+
+std::shared_ptr<Ray> CollisionComponent::getRay(){
+    return m_ray;
 }

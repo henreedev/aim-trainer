@@ -8,6 +8,7 @@ class GameObject;
 class Component {
 public:
     virtual ~Component() {};
+    std::weak_ptr<GameObject> getParent(){ return m_parent;}
 protected:
     std::weak_ptr<GameObject> m_parent;
 };
