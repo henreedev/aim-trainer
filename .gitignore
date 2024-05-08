@@ -15,6 +15,7 @@
 ## CMake ##
 
 build/
+External/
 
 CMakeLists.txt.user
 CMakeCache.txt
