@@ -14,19 +14,22 @@ CameraComponent::CameraComponent(std::weak_ptr<GameObject> parent, float sensiti
         m_transform = parent.lock()->getComponent<TransformComponent>();
     }
     m_scroll = 10.0f;
+    prevMousePos = glm::vec2(0.0f);
+    m_angle = glm::vec2(0.0f);
 }
 
 void CameraComponent::update() {
+    glm::vec2 drag = Global::input.getMouseDrag();
     if (m_isPlayerControlled) {
-        glm::vec2 drag = Global::input.getMouseDrag();
         glm::vec3 look = m_camera->getLook();
-        glm::vec3 vertRotAxis = look.x == 0.0f && look.z == 0.0f ? glm::vec3(1, 0, 0) : glm::normalize(glm::vec3(look.z, 0, look.x));
         m_camera->setPos(m_transform->getPos());
-        m_camera->rotate(drag.y * m_sens, vertRotAxis);
-        m_camera->rotate(drag.x * m_sens * -1, glm::vec3(0, 1, 0));
-        look = m_camera->getLook();
+        glm::vec2 delta = drag;
+        m_angle += delta * 0.002f;
+        m_angle.y = glm::clamp(m_angle.y, -4.5f, 4.5f);
+        float camX = glm::sin(m_angle.x);
+        float camZ = glm::cos(m_angle.x);
+        m_camera->setLook(-glm::vec3(-camX, m_angle.y, camZ));
         m_camera->setPos(m_transform->getPos() - look * m_scroll);
-
         if (m_canScroll) {
             float scrollDist = Global::input.getScrollDist();
             m_scroll += scrollDist;

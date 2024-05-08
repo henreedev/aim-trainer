@@ -22,6 +22,12 @@ private:
     float m_sens;
     float m_scroll;
     std::shared_ptr<TransformComponent> m_transform;
+
+    glm::vec2 prevMousePos;
+    glm::vec2 m_angle;
+
+    float m_radius = 0.2f;
+    float m_fov = 10.0f;
 };
 
 #endif // CAMERACOMPONENT_H
