@@ -3,7 +3,7 @@
 
 #include "glm/ext/vector_float3.hpp"
 #include <vector>
-class Collision;
+#include "collision.h"
 
 struct CollisionResult {
     glm::vec3 finalPos;

@@ -121,6 +121,7 @@ add_executable(${PROJECT_NAME}
     Engine/triangle.h
     Engine/aisystem.h Engine/aisystem.cpp
     Engine/aicomponent.h Engine/aicomponent.cpp
+    Engine/raycast.h
 
 
 )

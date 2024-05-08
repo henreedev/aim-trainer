@@ -148,13 +148,13 @@ void GameScreen::reset() {
     Selector* root = new Selector(pathExists, jump);
     shared_ptr<AiComponent> enemy_ai = make_shared<AiComponent>(enemy_weak, root);
     enemy->addComponent<AiComponent>(enemy_ai);
-    shared_ptr<Light> light = std::make_shared<Light>(LightType::POINT, glm::vec3(1, -0.4, 0), glm::vec3(1, 1, 1));
+    shared_ptr<Light> light = std::make_shared<Light>(LightType::POINT, glm::vec3(1, 0, 0), glm::vec3(1, 1, 1));
     light->setType(LightType::POINT);
     light->setPos(glm::vec3(0, 1, 0));
     light->setColor(glm::vec3(0.9, 0, 0));
-    light->setAttenuation(glm::vec3(10,10,10));
+    light->setAttenuation(glm::vec3(0.001f,0.001f,0.001f));
     m_lights.push_back(light);
-    Global::graphics.clearLights();
+//    Global::graphics.clearLights();
     Global::graphics.setLights(m_lights);
     // ADD PARTS TO WORLD
     m_gameWorld = make_shared<GameWorld>();
