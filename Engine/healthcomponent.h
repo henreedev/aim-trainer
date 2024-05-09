@@ -2,6 +2,7 @@
 #define HEALTHCOMPONENT_H
 
 #include "component.h"
+#include <raudio.h>
 
 class GameWorld;
 
@@ -12,6 +13,7 @@ public:
         : health(health), maxHealth(maxHealth)
     {
         m_parent = parent_weak;
+        sound = LoadMusicStream("Resources/resources/pistol.mp3");
     }
 
     void takeDamage(float damage) {
@@ -29,6 +31,7 @@ public:
     }
     float health;
     float maxHealth;
+    Music sound;
 };
 
 #endif // HEALTHCOMPONENT_H

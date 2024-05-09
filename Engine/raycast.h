@@ -10,11 +10,14 @@
 #include "GLFW/glfw3.h"
 #include "glm/vec3.hpp"
 #include "triangle.h"
+#include <raudio.h>
 
 class GameObject;
 
 class Ray {
 public:
+    Sound pistol;
+    Sound metal;
     float minT = 999999.0f;
     std::weak_ptr<GameObject> closestObj = std::make_shared<GameObject>();
     glm::vec3 p;
@@ -22,11 +25,17 @@ public:
     bool isAutomaticWeapon = false;
     float dps = 100.0;
     void setWeaponAutomatic(bool isAutomatic) {isAutomaticWeapon = isAutomatic;}
-    Ray(glm::vec3 p, glm::vec3 d) : p(p), d(d) {}
+    Ray(glm::vec3 p, glm::vec3 d) : p(p), d(d) { 
+        InitAudioDevice();
+        pistol = LoadSoundFromWave(LoadWave("Resources/resources/pistol.ogg"));
+        metal = LoadSoundFromWave(LoadWave("Resources/resources/rico2.ogg"));
+    }
     void reset(){minT = 999999.0f; closestObj = std::make_shared<GameObject>();}
     void intersect(std::shared_ptr<EllipseCollider> ellipsoid, float deltaTime) {
+        if (Global::input.actionJustPressed(GLFW_MOUSE_BUTTON_LEFT)) PlaySound(pistol);
         if (ellipsoid->ignoreRaycast) return;
         float t0, t1; // Solutions for t if the ray intersects the sphere
+    
 #if 0 \
     // Geometric solution
         Vec3f L = center - ray.orig;
@@ -53,7 +62,6 @@ public:
             t0 = t1; // If t0 is negative, let's use t1 instead.
             if (t0 < 0) return; // Both t0 and t1 are negative.
         }
-
         if (t0 >= 0.0 && t0 < minT) {
             minT = t0;
             closestObj = ellipsoid->m_transform->getParent();
@@ -65,6 +73,8 @@ public:
                         }
                     } else {
                         if (Global::input.actionJustPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+                            PlaySound(metal);
+                            
                             closestObj.lock()->getComponent<HealthComponent>()->takeDamage(dps);
                         }
                     }

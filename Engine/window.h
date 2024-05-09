@@ -6,7 +6,7 @@
 class Window
 {
 public:
-    Window();
+    Window(GLFWwindow* wins);
     ~Window();
 
     int start(int appId);

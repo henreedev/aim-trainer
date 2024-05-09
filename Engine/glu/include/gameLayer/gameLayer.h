@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/vec2.hpp>
 
-bool initGame();
+bool initGame(int& chng);
 bool gameLogic(float deltaTime);
 void closeGame();
 
@@ -28,7 +28,5 @@ namespace platform
 
 	bool writeEntireFile(const char *name, void *buffer, size_t size);
 	bool readEntireFile(const char *name, void *buffer, size_t size);
-
-
 };
 

@@ -5,6 +5,7 @@
 #include "raudio.h"
 #include <iostream>
 #include <sstream>
+#include <cstdlib>
 #include "Engine/glu/glui.h"
 
 gl2d::Renderer2D renderer;
@@ -16,14 +17,13 @@ gl2d::Texture logoTexture;
 gl2d::Texture tick;
 glui::RendererUi ui;
 
-struct GameData
-{
-
-}gameData;
+struct GameData{}gameData;
 
 Music music;
-bool initGame()
-{
+float vol = 100.0f;
+int* screenPnt;
+bool initGame(int& chng) {
+
 	InitAudioDevice();
 	renderer.create();
 	//font.createFromFile("Resources/resources/roboto_black.ttf");
@@ -32,112 +32,32 @@ bool initGame()
 	terrariaTexture.loadFromFile("Resources/resources/terraria.png");
 	//logoTexture.loadFromFile("Resources/resources/logo.png", true);
 	tick.loadFromFile("Resources/resources/tick.png", true);
-	std::cout<< IsAudioDeviceReady()<< std::endl;
-	music = LoadMusicStream("Resources/resources/tf2.flac");
-	SetMusicVolume(music, 1);
-	if(!platform::readEntireFile("Resources/resources/gameData.data", &gameData, sizeof(GameData)))
-	{
+	music = LoadMusicStream("Resources/resources/tf.ogg");
+	SetMusicVolume(music, vol);
+	PlayMusicStream(music);
+	screenPnt = &chng;
+	if(!platform::readEntireFile("Resources/resources/gameData.data", &gameData, sizeof(GameData))) {
 		gameData = GameData();
 	}
-
 	return true;
-}
-
-void render1()
-{
-	ui.Begin(6996);
-		
-		//ui.Text("Terraria", Colors_Gray);
-		//ui.Texture(0, terrariaTexture);
-		//ui.Texture(1, terrariaTexture);
-		//ui.Texture(2, terrariaTexture);
-
-		if (ui.ButtonWithTexture(1, texture))
-		{
-			//play
-		}
-
-		static float value = 0;
-		static int valueInt = 0;
-		ui.sliderFloat("Slider example", &value, -2, 5, Colors_White, texture, {1,1,1,1}, texture);
-		ui.sliderInt("Slider example int", &valueInt, -2, 5, {1,1,1,1}, texture, {1,1,1,1}, texture);
-
-		glm::vec4 customTransform = {};
-		bool clicked = 0;
-		bool hovered = 0;
-		if (ui.CustomWidget(23, &customTransform, &hovered, &clicked))
-		{
-			if (clicked)
-			{
-				renderer.renderRectangle(customTransform, Colors_Blue);
-			}
-			else if (hovered)
-			{
-				renderer.renderRectangle(customTransform, Colors_Green);
-			}
-			else
-			{
-				renderer.renderRectangle(customTransform, Colors_Red);
-			}
-		}
-
-		ui.BeginMenu("color test", Colors_Transparent, texture);
-		{
-			static glm::vec3 color = {};
-			static glm::vec3 color2 = {};
-			ui.colorPicker("color example", &color[0], texture, texture);
-			ui.colorPicker("color example2", &color2[0], texture, texture);
-
-			ui.newColum(0);
-
-			ui.Texture(3, texture, {color, 1});
-			ui.Texture(4, texture, {color2, 1});
-		
-		}
-		ui.EndMenu();
-
-
-		ui.BeginMenu("settings", Colors_Transparent, texture);
-			ui.BeginMenu("volume settings", Colors_Transparent, texture);
-				static bool sound = true;
-				static bool music = true;
-				ui.Toggle("sound", Colors_Gray, &sound, texture, tick);
-				ui.Toggle("music", Colors_Gray, &music, texture, tick);
-			ui.EndMenu();
-
-			ui.BeginMenu("video settings", Colors_Transparent, texture);
-				static bool vSync = true;
-				static bool shadows = true;
-				ui.Toggle("vSync", Colors_Gray, &vSync, texture, tick);
-				ui.Toggle("shadows", Colors_Gray, &shadows, texture, tick);
-			ui.EndMenu();
-		ui.EndMenu();
-
-		ui.BeginMenu("create new world", Colors_Green, texture);
-			ui.Text("Enter world name", Colors_Gray);
-			static char text[15];
-			ui.InputText("input", text, sizeof(text));
-			ui.Button("create", Colors_Transparent, texture);
-		ui.EndMenu();
-		ui.Button("Exit", Colors_Transparent, {});
-
-	ui.End();
 }
 
 float masterVolume = 1;
 float musicVolume = 1;
 bool vSync = true;
 bool shadows = true;
+int prevVolume = 0;
+void render() {
 
-void render2()
-{
-	
 	ui.Begin(100);
 
-		ui.SetAlignModeFixedSizeWidgets({0, 100});
+		ui.SetAlignModeFixedSizeWidgets({300, 200});
 		ui.Button("Title", Colors_Black, texture);
 		ui.newColum(0);
-		if (ui.Button("Play", Colors_Green, texture)) {}
+		if (ui.Button("Play", Colors_Green, texture)) {
+			UnloadMusicStream(music);
+			*screenPnt = 1;
+		}
 
 		ui.BeginMenu("settings", Colors_Transparent, texture);
 			ui.BeginMenu("Sound settings", Colors_Transparent, texture);
@@ -155,10 +75,9 @@ void render2()
 		ui.colorPicker("color", &color[0], texture, texture, Colors_White, Colors_Gray);
 
 		static bool toggle = 0;
-		ui.ToggleButton("Toggle test", Colors_White, &toggle, texture);
-
-		static char text[20] = {};
-		ui.InputText("Name: ", text, sizeof(text), Colors_White, texture);
+		ui.ToggleButton("Music:", Colors_White, &toggle, texture);
+		if(toggle) PauseMusicStream(music);
+		else ResumeMusicStream(music);
 
 
 		static size_t index = 0;
@@ -168,18 +87,19 @@ void render2()
 			Colors_Red,
 		};
 
-	static int val2 = 0;
-	ui.sliderInt("test##2", &val2, 0, 100, Colors_White, texture, Colors_Gray, texture);
-	if (ui.Button("Exit...", Colors_Gray, texture)) { }
-	ui.newColum(1);
-	if (ui.Button("Next", Colors_Black, texture)) { 
-		
+	static float val2 = vol;
+	ui.sliderFloat("Volume: ", &val2, 0.0f, 100.0f, Colors_White, texture, Colors_Gray, texture);
+	if((float)val2 != prevVolume) {
+		SetMusicVolume(music, val2 / 100.0f);
+		prevVolume = val2;
 	}
+	if (ui.Button("Exit", Colors_Gray, texture)) { exit(EXIT_SUCCESS); }
+	ui.newColum(1);
+	if (ui.Button("Next", Colors_Black, texture)) { }
 	ui.End();
-
 }
 
-bool change = 1;
+
 bool gameLogic(float deltaTime) {
 
 #pragma region init stuff
@@ -190,14 +110,11 @@ bool gameLogic(float deltaTime) {
 	renderer.updateWindowMetrics(w, h);
 	renderer.clearScreen(gl2d::Color4f(0.2,0.2,0.3, 1));
 #pragma endregion
-
-	if (change) render2();
-	else render1();
-	if (platform::isKeyReleased(platform::Button::Q)) change = !change;
+	render();
 
 #pragma region set finishing stuff
 	UpdateMusicStream(music);
-	PlayMusicStream(music);
+	
 	ui.renderFrame(renderer, font, platform::getRelMousePosition() * 2,
 		platform::isLMousePressed(), platform::isLMouseHeld(), platform::isLMouseReleased(),
 		platform::isKeyReleased(platform::Button::Escape), platform::getTypedInput(), deltaTime);

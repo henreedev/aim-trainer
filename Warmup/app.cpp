@@ -1,8 +1,8 @@
 #include "App.h"
 
 App::App() : m_gameScreen(std::make_shared<GameScreen>()), m_menuScreen(std::make_shared<MenuScreen>()) {
-    addScreen(m_gameScreen, false);
-    addScreen(m_menuScreen, true);
+    addScreen(m_gameScreen, true);
+    addScreen(m_menuScreen, false);
 }
 
 void App::mouseButtonEvent(int button, int action) {

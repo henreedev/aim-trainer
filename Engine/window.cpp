@@ -1,48 +1,20 @@
 #include "window.h"
 #include "Warmup/App.h"
 
-Window::Window(){
-
+Window::Window(GLFWwindow* wins){
+    m_GLFWwindow = wins;
 }
 
 Window::~Window(){
     std::cout<<"Window destructor"<<std::endl;
-    if(m_coreAllocated){
-        delete(m_core);
-    }
-    if(m_windowAllocated){
-        glfwDestroyWindow(m_GLFWwindow);
-    }
-    if(m_glfwInitialized){
-        glfwTerminate();
-    }
+    if(m_coreAllocated) delete(m_core);
+    if(m_windowAllocated) glfwDestroyWindow(m_GLFWwindow);
+    if(m_glfwInitialized) glfwTerminate();
 }
 
 int Window::start(int appId){
-    // Testing glfw
-    if(!glfwInit()){
-        std::cout<<"GLFW init failed :("<<std::endl;
-        return -1;
-    }
+
     m_glfwInitialized = true;
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-
-    m_GLFWwindow = glfwCreateWindow(640, 480, "CS1950U Engine", NULL, NULL);
-    if (!m_GLFWwindow)
-    {
-        std::cout<<"Window Creation Failed :("<<std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    m_windowAllocated = true;
-
-    glfwMakeContextCurrent(m_GLFWwindow);
-
-    Global::graphics.initializeGLEW(); // IMPORTANT: Can't make ANY OpenGL calls before this occurs!
     Global::graphics.initialize();
     int width, height;
     glfwGetWindowSize(m_GLFWwindow, &width, &height);
@@ -65,20 +37,12 @@ int Window::start(int appId){
     // Stores variable in glfw to reference our m_core object. This allows it to be accessed
     // even in static methods such as keyCallback and windowSizeCallback
     glfwSetWindowUserPointer(m_GLFWwindow, m_core);
-
     glfwSetKeyCallback(m_GLFWwindow, keyCallback);
-
     glfwSetMouseButtonCallback(m_GLFWwindow, mouseButtonCallback);
-
-
     glfwSetCursorPosCallback(m_GLFWwindow, cursorPosCallback);
-
     glfwSetScrollCallback(m_GLFWwindow, scrollCallback);
-
     glfwSetWindowSizeCallback(m_GLFWwindow, windowSizeCallback);
-
     glfwSetFramebufferSizeCallback(m_GLFWwindow, framebufferSizeCallback);
-
     glfwSetInputMode(m_GLFWwindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     if (glfwRawMouseMotionSupported()){
         glfwSetInputMode(m_GLFWwindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
@@ -93,8 +57,8 @@ int Window::start(int appId){
 
 int Window::loop(){
     double previous = glfwGetTime();
-    while (!glfwWindowShouldClose(m_GLFWwindow))
-    {
+    while (!glfwWindowShouldClose(m_GLFWwindow)) {
+        
         glfwPollEvents();
         // calculate deltaTime
         double current = glfwGetTime();
