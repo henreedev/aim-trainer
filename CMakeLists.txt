@@ -16,7 +16,12 @@ set(GLFW_SOURCE_DIR "External/glfw-3.3.8")
 set(GLEW_SOURCE_DIR "External/glew")
 set(GLM_SOURCE_DIR "External/glm-master")
 set(STB_SOURCE_DIR "External/stb")
+set(STBI_SOURCE_DIR "External/stb_image")
 set(FREETYPE_SOURCE_DIR "External/freetype")
+set(GL2D_SOURCE_DIR "External/gl2d")
+set(IMGUI_SOURCE_DIR "External/imgui-docking")
+set(STBT_SOURCE_DIR "External/stb_truetype")
+set(GLAD_SOURCE_DIR "External/glad")
 
 #GLFW settings
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "")
@@ -36,6 +41,11 @@ set(FT_DISABLE_BROTLI TRUE)
 add_subdirectory(${GLFW_SOURCE_DIR})
 add_subdirectory(${GLM_SOURCE_DIR})
 add_subdirectory(${FREETYPE_SOURCE_DIR})
+add_subdirectory(${GLAD_SOURCE_DIR})
+add_subdirectory(${STBT_SOURCE_DIR})
+add_subdirectory(${GL2D_SOURCE_DIR})
+add_subdirectory(${IMGUI_SOURCE_DIR})
+add_subdirectory(${STBI_SOURCE_DIR})
 
 add_library(StaticGLEW STATIC ${GLEW_SOURCE_DIR}/src/glew.c)
 
@@ -131,11 +141,12 @@ add_executable(${PROJECT_NAME}
     Engine/updatesystem.h
     Engine/scenario.cpp
     Engine/randomgen.h
-
+    Engine/glu/glui.h
+    Engine/glu/glui.cpp
 
 )
 
-target_link_libraries(${PROJECT_NAME} glfw StaticGLEW glm freetype ${OPENGL_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} glfw StaticGLEW glm freetype stb_image stb_truetype glad gl2d imgui ${OPENGL_LIBRARIES})
 
 file( COPY ${CMAKE_CURRENT_SOURCE_DIR}/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 
