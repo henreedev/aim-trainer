@@ -2,6 +2,7 @@
 #include "Engine/glu/gl2d.h"
 #include "Engine/glu/include/platform/platformInput.h"
 #include "imgui.h"
+#include "raudio.h"
 #include <iostream>
 #include <sstream>
 #include "Engine/glu/glui.h"
@@ -20,9 +21,10 @@ struct GameData
 
 }gameData;
 
-
+Music music;
 bool initGame()
 {
+	InitAudioDevice();
 	renderer.create();
 	//font.createFromFile("Resources/resources/roboto_black.ttf");
 	font.createFromFile("Resources/resources/font/ANDYB.TTF");
@@ -30,7 +32,9 @@ bool initGame()
 	terrariaTexture.loadFromFile("Resources/resources/terraria.png");
 	//logoTexture.loadFromFile("Resources/resources/logo.png", true);
 	tick.loadFromFile("Resources/resources/tick.png", true);
-
+	std::cout<< IsAudioDeviceReady()<< std::endl;
+	music = LoadMusicStream("Resources/resources/tf2.flac");
+	SetMusicVolume(music, 1);
 	if(!platform::readEntireFile("Resources/resources/gameData.data", &gameData, sizeof(GameData)))
 	{
 		gameData = GameData();
@@ -42,6 +46,7 @@ bool initGame()
 void render1()
 {
 	ui.Begin(6996);
+		
 		//ui.Text("Terraria", Colors_Gray);
 		//ui.Texture(0, terrariaTexture);
 		//ui.Texture(1, terrariaTexture);
@@ -126,6 +131,7 @@ bool shadows = true;
 
 void render2()
 {
+	
 	ui.Begin(100);
 
 		ui.SetAlignModeFixedSizeWidgets({0, 100});
@@ -166,8 +172,11 @@ void render2()
 	ui.sliderInt("test##2", &val2, 0, 100, Colors_White, texture, Colors_Gray, texture);
 	if (ui.Button("Exit...", Colors_Gray, texture)) { }
 	ui.newColum(1);
-	if (ui.Button("Next", Colors_Black, texture)) { }
+	if (ui.Button("Next", Colors_Black, texture)) { 
+		
+	}
 	ui.End();
+
 }
 
 bool change = 1;
@@ -187,7 +196,8 @@ bool gameLogic(float deltaTime) {
 	if (platform::isKeyReleased(platform::Button::Q)) change = !change;
 
 #pragma region set finishing stuff
-
+	UpdateMusicStream(music);
+	PlayMusicStream(music);
 	ui.renderFrame(renderer, font, platform::getRelMousePosition() * 2,
 		platform::isLMousePressed(), platform::isLMouseHeld(), platform::isLMouseReleased(),
 		platform::isKeyReleased(platform::Button::Escape), platform::getTypedInput(), deltaTime);

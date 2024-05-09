@@ -20,6 +20,7 @@ set(STBI_SOURCE_DIR "External/stb_image")
 set(FREETYPE_SOURCE_DIR "External/freetype")
 set(IMGUI_SOURCE_DIR "External/imgui-docking")
 set(STBT_SOURCE_DIR "External/stb_truetype")
+set(AUDIO_SOURCE_DIR "External/raudio")
 
 #GLFW settings
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "")
@@ -42,6 +43,7 @@ add_subdirectory(${FREETYPE_SOURCE_DIR})
 add_subdirectory(${STBT_SOURCE_DIR})
 add_subdirectory(${IMGUI_SOURCE_DIR})
 add_subdirectory(${STBI_SOURCE_DIR})
+add_subdirectory(${AUDIO_SOURCE_DIR})
 
 add_library(StaticGLEW STATIC ${GLEW_SOURCE_DIR}/src/glew.c)
 
@@ -154,7 +156,7 @@ add_executable(${PROJECT_NAME}
 
 )
 
-target_link_libraries(${PROJECT_NAME} glfw StaticGLEW glm freetype stb_image stb_truetype imgui ${OPENGL_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} glfw StaticGLEW glm freetype stb_image stb_truetype imgui raudio ${OPENGL_LIBRARIES})
 
 file( COPY ${CMAKE_CURRENT_SOURCE_DIR}/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 
