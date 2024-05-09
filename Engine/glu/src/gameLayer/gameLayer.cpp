@@ -121,7 +121,6 @@ void render1()
 
 float masterVolume = 1;
 float musicVolume = 1;
-float soundsVolume = 1;
 bool vSync = true;
 bool shadows = true;
 
@@ -129,19 +128,15 @@ void render2()
 {
 	ui.Begin(100);
 
-	
 		ui.SetAlignModeFixedSizeWidgets({0, 100});
-
-		if (ui.Button("Play", Colors_Green, texture))
-		{
-			//play
-		}
+		ui.Button("Title", Colors_Black, texture);
+		ui.newColum(0);
+		if (ui.Button("Play", Colors_Green, texture)) {}
 
 		ui.BeginMenu("settings", Colors_Transparent, texture);
 			ui.BeginMenu("Sound settings", Colors_Transparent, texture);
 				ui.sliderFloat("Master volume", &masterVolume, 0, 1, Colors_White, texture, Colors_White, texture);
 				ui.sliderFloat("Music volume", &musicVolume, 0, 1, Colors_White, texture, Colors_White, texture);
-				ui.sliderFloat("Sounds volume", &soundsVolume, 0, 1, Colors_White, texture, Colors_White, texture);
 			ui.EndMenu();
 
 			ui.BeginMenu("video settings", Colors_Transparent, texture);
@@ -150,24 +145,15 @@ void render2()
 			ui.EndMenu();
 		ui.EndMenu();
 
-		
-		if (ui.Button("Exit...", Colors_Gray, texture))
-		{
-			//exit
-		}
-
 		static glm::vec3 color = {1,1,1};
-
 		ui.colorPicker("color", &color[0], texture, texture, Colors_White, Colors_Gray);
 
 		static bool toggle = 0;
 		ui.ToggleButton("Toggle test", Colors_White, &toggle, texture);
 
 		static char text[20] = {};
-		ui.InputText("Test: ", text, sizeof(text), Colors_White, texture);
+		ui.InputText("Name: ", text, sizeof(text), Colors_White, texture);
 
-		static char text2[20] = {};
-		ui.InputText("Test2: ", text2, sizeof(text2), Colors_White, texture);
 
 		static size_t index = 0;
 		static glm::vec4 colors[] = {
@@ -176,83 +162,35 @@ void render2()
 			Colors_Red,
 		};
 
-		ui.toggleOptions("fruit: ", "apple|banana|cherry", &index, true, Colors_White, 
-			colors, 
-			texture, Colors_Gray,
-			"This is a toggle button\nPress it to select options\n\n-Apple\n-Banana\nCherry yum!");
-
-	ui.newColum(1);
-
-	if (ui.Button("Settings##1", Colors_White, texture))
-	{
-		//play
-	}
-
-	if (ui.Button("Settings##2", Colors_White, texture))
-	{
-		//play
-	}
-
-	if (ui.Button("Settings##3", Colors_White, texture))
-	{
-		//play
-	}
-
-	if (ui.Button("Settings##4", Colors_White, texture))
-	{
-		//play
-	}
-
-	static float val = 0;
-
-	ui.sliderFloat("test", &val, 0, 1, Colors_White, texture, Colors_Gray, texture);
-
 	static int val2 = 0;
 	ui.sliderInt("test##2", &val2, 0, 100, Colors_White, texture, Colors_Gray, texture);
-
-
+	if (ui.Button("Exit...", Colors_Gray, texture)) { }
+	ui.newColum(1);
+	if (ui.Button("Next", Colors_Black, texture)) { }
 	ui.End();
-
-
 }
 
-
 bool change = 1;
+bool gameLogic(float deltaTime) {
 
-bool gameLogic(float deltaTime)
-{
 #pragma region init stuff
+
 	int w = 0; int h = 0;
-	w= platform::getWindowSizeX();
-	h = platform::getWindowSizeY();
-	
+	w = platform::getWindowSizeX() * 2;
+	h = platform::getWindowSizeY() * 2;
 	renderer.updateWindowMetrics(w, h);
 	renderer.clearScreen(gl2d::Color4f(0.2,0.2,0.3, 1));
 #pragma endregion
 
-	//ImGui::ShowDemoWindow();
-
-	if (change)
-	{
-		render2();
-	}
-	else
-	{
-		render1();
-	}
-
-
-	if (platform::isKeyReleased(platform::Button::Q))
-	{
-		change = !change;
-	}
+	if (change) render2();
+	else render1();
+	if (platform::isKeyReleased(platform::Button::Q)) change = !change;
 
 #pragma region set finishing stuff
 
-	ui.renderFrame(renderer, font, platform::getRelMousePosition(),
+	ui.renderFrame(renderer, font, platform::getRelMousePosition() * 2,
 		platform::isLMousePressed(), platform::isLMouseHeld(), platform::isLMouseReleased(),
 		platform::isKeyReleased(platform::Button::Escape), platform::getTypedInput(), deltaTime);
-
 	renderer.flush();
 
 	return true;
@@ -260,9 +198,6 @@ bool gameLogic(float deltaTime)
 
 }
 
-void closeGame()
-{
-
+void closeGame() {
 	platform::writeEntireFile("Resources/resources/gameData.data", &gameData, sizeof(GameData));
-
 }
