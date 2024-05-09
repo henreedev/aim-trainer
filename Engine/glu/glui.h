@@ -16,7 +16,7 @@
 
 
 #pragma once
-#include "gl2d/gl2d.h"
+#include "gl2d.h"
 #include <string>
 #include <unordered_map>
 

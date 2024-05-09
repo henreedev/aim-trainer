@@ -18,10 +18,8 @@ set(GLM_SOURCE_DIR "External/glm-master")
 set(STB_SOURCE_DIR "External/stb")
 set(STBI_SOURCE_DIR "External/stb_image")
 set(FREETYPE_SOURCE_DIR "External/freetype")
-set(GL2D_SOURCE_DIR "External/gl2d")
 set(IMGUI_SOURCE_DIR "External/imgui-docking")
 set(STBT_SOURCE_DIR "External/stb_truetype")
-set(GLAD_SOURCE_DIR "External/glad")
 
 #GLFW settings
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "")
@@ -41,9 +39,7 @@ set(FT_DISABLE_BROTLI TRUE)
 add_subdirectory(${GLFW_SOURCE_DIR})
 add_subdirectory(${GLM_SOURCE_DIR})
 add_subdirectory(${FREETYPE_SOURCE_DIR})
-add_subdirectory(${GLAD_SOURCE_DIR})
 add_subdirectory(${STBT_SOURCE_DIR})
-add_subdirectory(${GL2D_SOURCE_DIR})
 add_subdirectory(${IMGUI_SOURCE_DIR})
 add_subdirectory(${STBI_SOURCE_DIR})
 
@@ -143,10 +139,22 @@ add_executable(${PROJECT_NAME}
     Engine/randomgen.h
     Engine/glu/glui.h
     Engine/glu/glui.cpp
+    Engine/glu/gl2d.h
+    Engine/glu/gl2d.cpp
+    Engine/glu/include/gameLayer/gameLayer.h
+    Engine/glu/src/gameLayer/gameLayer.cpp
+    Engine/glu/include/platform/otherPlatformFunctions.h
+    Engine/glu/include/platform/platformInput.h
+    Engine/glu/include/platform/platformTools.h
+    Engine/glu/include/config.h
+    Engine/glu/src/platform/glfwMain.cpp
+    Engine/glu/src/platform/headerOnly.cpp
+    Engine/glu/src/platform/otherPlatformFunctions.cpp
+    Engine/glu/src/platform/platformInput.cpp
 
 )
 
-target_link_libraries(${PROJECT_NAME} glfw StaticGLEW glm freetype stb_image stb_truetype glad gl2d imgui ${OPENGL_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} glfw StaticGLEW glm freetype stb_image stb_truetype imgui ${OPENGL_LIBRARIES})
 
 file( COPY ${CMAKE_CURRENT_SOURCE_DIR}/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 

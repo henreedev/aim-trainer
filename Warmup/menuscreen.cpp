@@ -2,10 +2,7 @@
 
 #include "Graphics/global.h"
 
-MenuScreen::MenuScreen()
-{
-
-}
+MenuScreen::MenuScreen() {}
 
 
 void MenuScreen::draw() {
@@ -19,17 +16,8 @@ void MenuScreen::draw() {
                                 0.8f, 0.1f, glm::vec3(.8, .8, 1));
 }
 void MenuScreen::keyEvent(int key, int action) {
-    if(key == GLFW_KEY_ESCAPE){
-
-    }
+    if(key == GLFW_KEY_ESCAPE){}
 }
-void MenuScreen::mousePosEvent(double xpos, double ypos) {
-
-}
-void MenuScreen::mouseButtonEvent(int button, int action) {
-
-}
-
-void MenuScreen::switchToGame() {
-
-}
+void MenuScreen::mousePosEvent(double xpos, double ypos) {}
+void MenuScreen::mouseButtonEvent(int button, int action) {}
+void MenuScreen::switchToGame() {}

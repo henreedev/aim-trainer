@@ -8,7 +8,7 @@
 #include <glm/gtx/color_space.hpp>
 
 #include "glui.h"
-#include "gl2d/gl2d.h"
+#include "gl2d.h"
 #include <unordered_map>
 #include <iostream>
 #include <sstream>
