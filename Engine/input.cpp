@@ -9,6 +9,7 @@ void Input::update(float delta) {
 
 void Input::keyEvent(int key, int action) {
     m_inputMap.insert_or_assign(key, action);
+    m_justPressedInputMap.insert_or_assign(key, action);
 }
 void Input::mousePosEvent(double xpos, double ypos) {
     auto newPos = glm::vec2(xpos, ypos);
@@ -17,6 +18,7 @@ void Input::mousePosEvent(double xpos, double ypos) {
 }
 void Input::mouseButtonEvent(int button, int action) {
     m_inputMap.insert_or_assign(button, action);
+    m_justPressedInputMap.insert_or_assign(button, action);
 }
 void Input::scrollEvent(double distance) {
     m_scrollDist = distance;

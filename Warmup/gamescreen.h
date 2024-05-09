@@ -2,6 +2,7 @@
 #define GAMESCREEN_H
 
 
+#include "Engine/scenario.h"
 #include "Engine/screen.h"
 #include <memory>
 #include "Graphics/global.h"
@@ -9,6 +10,10 @@
 
 class GameWorld;
 class TransformComponent;
+
+class GameObject;
+
+
 
 class GameScreen : public Screen
 {
@@ -34,8 +39,12 @@ private:
     const glm::vec3 worldBoundsMax = glm::vec3(20, 20, 20);
     bool m_grounded;
     std::shared_ptr<TransformComponent> tc;
+    void loadScenario(Scenario scenario);
 
 public:
+    static std::shared_ptr<GameObject> ray;
+    static Scenario currScen;
+    static int dummiesAlive;
     GameScreen();
 
     void reset();

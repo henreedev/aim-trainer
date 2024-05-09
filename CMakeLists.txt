@@ -122,6 +122,15 @@ add_executable(${PROJECT_NAME}
     Engine/aisystem.h Engine/aisystem.cpp
     Engine/aicomponent.h Engine/aicomponent.cpp
     Engine/raycast.h
+    Engine/scenario.h
+    Engine/scenariocomponent.h
+    Engine/healthcomponent.h Engine/healthcomponent.cpp
+    Engine/gameworld.cpp
+    Engine/scenariocomponent.cpp
+    Engine/scenarioEnum.h
+    Engine/updatesystem.h
+    Engine/scenario.cpp
+    Engine/randomgen.h
 
 
 )

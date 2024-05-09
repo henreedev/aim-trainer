@@ -9,6 +9,8 @@
 #include "Engine/drawcomponent.h"
 #include "Engine/meshloader.h"
 #include "Engine/ellipsecollider.h"
+#include "Engine/scenario.h"
+#include "Engine/updatesystem.h"
 #include "GLFW/glfw3.h"
 
 
@@ -23,15 +25,67 @@ GameScreen::GameScreen()
 
 }
 
+int GameScreen::dummiesAlive = 0;
+
+Scenario GameScreen::currScen;
+
+void GameScreen::loadScenario(Scenario scenario) {
+    currScen = scenario;
+    m_gameWorld->addGameObject(ScenarioMaker::makeScenario(scenario, 0.0));
+
+
+}
+
+std::shared_ptr<GameObject> GameScreen::ray;
+
 void GameScreen::update(double deltaTime){
     m_gameWorld->update(deltaTime);
+    if (Global::input.actionJustPressed(GLFW_KEY_1)) {
+        reset();
+        loadScenario(Scenario::TRACK_CLOSE);
+        GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+    } else if (Global::input.actionJustPressed(GLFW_KEY_2)) {
+        reset();
+        loadScenario(Scenario::TRACK_FAR);
+        GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+    } else if (Global::input.actionJustPressed(GLFW_KEY_3)) {
+        reset();
+        loadScenario(Scenario::TRACK_MANY);
+        GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+    } else if (Global::input.actionJustPressed(GLFW_KEY_4)) {
+        reset();
+        loadScenario(Scenario::FLICK_GRID);
+        GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = false;
+    } else if (Global::input.actionJustPressed(GLFW_KEY_5)) {
+        reset();
+        loadScenario(Scenario::FLICK_REACT);
+        GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = false;
+    } else if (Global::input.actionJustPressed(GLFW_KEY_6)) {
+        reset();
+        loadScenario(Scenario::FLICK_BOUNCE);
+        GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = false;
+    } else if (Global::input.actionJustPressed(GLFW_KEY_7)) {
+        reset();
+        loadScenario(Scenario::SWITCH_360);
+        GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+    } else if (Global::input.actionJustPressed(GLFW_KEY_8)) {
+        reset();
+        loadScenario(Scenario::SWITCH_SEQUENTIAL);
+        GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+    } else if (Global::input.actionJustPressed(GLFW_KEY_9)) {
+        reset();
+        loadScenario(Scenario::SWITCH_GRAVITY);
+        GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+    }
+    std::cout << dummiesAlive << " dummies alive" << std::endl;
+
 }
 
 void GameScreen::draw(){
     Global::graphics.setClearColor(glm::vec3(0.0f, 0.5f, 0.8f));
     Global::graphics.clearScreen(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     Global::graphics.bindShader("phong");
-    Global::graphics.setGlobalData(glm::vec3(0.5f));
+    Global::graphics.setGlobalData(glm::vec3(0.75f));
     m_gameWorld->draw();
     if (tc->getPos().y > 7){
         Global::graphics.bindShader("text");
@@ -44,6 +98,7 @@ void GameScreen::draw(){
 }
 
 void GameScreen::reset() {
+    GameScreen::dummiesAlive = 0;
     // MAKE PLAYER GAMEOBJECT
     shared_ptr<GameObject> player = make_shared<GameObject>();
     weak_ptr<GameObject> player_weak = player;
@@ -87,8 +142,8 @@ void GameScreen::reset() {
     shared_ptr<TransformComponent> o_tc = make_shared<TransformComponent>(obstacle_weak, mesh_transform);
     obstacle->addComponent(o_tc);
     shared_ptr<TriMesh> trimesh = MeshLoader::getMeshFromVertices(Global::graphics.addShape("test", "Resources/Meshes/environment3.obj"), mesh_transform);
-    MeshLoader::addNavmeshToTrimesh(Global::graphics.addShape("test_navmesh", "Resources/Meshes/environment3nav.obj"), mesh_transform, trimesh);
-    AiSystem::navMesh = trimesh->navmesh;
+//    MeshLoader::addNavmeshToTrimesh(Global::graphics.addShape("test_navmesh", "Resources/Meshes/environment3nav.obj"), mesh_transform, trimesh);
+//    AiSystem::navMesh = trimesh->navmesh;
     obstacle->addComponent(make_shared<DrawComponent>(obstacle_weak, "test", "tile"));
 
     shared_ptr<CollisionComponent> o_coc = make_shared<CollisionComponent>(obstacle_weak, trimesh);
@@ -152,6 +207,7 @@ void GameScreen::reset() {
 
     // ADD RAYCAST
     shared_ptr<GameObject> ray = make_shared<GameObject>();
+    GameScreen::ray = ray;
     weak_ptr<GameObject> ray_weak = ray;
     std::shared_ptr<Ray> ray_collider = make_shared<Ray>(glm::vec3(0, 1, 0), glm::vec3(1.0, 0.0, 0.0));
     shared_ptr<TransformComponent> ray_tc = make_shared<TransformComponent>(ray_weak, glm::vec3(0), 1.0f);
@@ -169,16 +225,19 @@ void GameScreen::reset() {
     Global::graphics.setLights(m_lights);
     // ADD PARTS TO WORLD
     m_gameWorld = make_shared<GameWorld>();
+    GameWorld::gameWorldInstance = m_gameWorld;
     m_gameWorld->addSystem<DrawSystem>(make_shared<DrawSystem>());
     m_gameWorld->addSystem<CharacterControllerSystem>(make_shared<CharacterControllerSystem>(5.0));
     m_gameWorld->addSystem<CameraSystem>(make_shared<CameraSystem>());
     m_gameWorld->addSystem<CollisionSystem>(make_shared<CollisionSystem>());
+    m_gameWorld->addSystem<UpdateSystem>(make_shared<UpdateSystem>());
 //    m_gameWorld->addSystem<AiSystem>(make_shared<AiSystem>());
     m_gameWorld->addGameObject(player);
     m_gameWorld->addGameObject(obstacle);
-    m_gameWorld->addGameObject(ball);
+//    m_gameWorld->addGameObject(ball);
 //    m_gameWorld->addGameObject(enemy);
-    m_gameWorld->addGameObject(floor);
+//    m_gameWorld->addGameObject(floor);
+    DummyMaker::makeDummy(glm::vec3(1, 4, 1), 100, 1);
     m_gameWorld->addGameObject(ray);
 
 }

@@ -77,13 +77,15 @@ void CollisionSystem::update(float deltaTime) {
         for (int j = i + 1; j < m_dynamicObjs.size(); j++) {
             std::shared_ptr<GameObject>& gObj1 = m_dynamicObjs[j];
             std::shared_ptr<GameObject>& gObj2 = m_dynamicObjs[i];
+            if (!gObj1) continue;
+            if (!gObj2) continue;
             std::shared_ptr<CollisionComponent> cc1 = gObj1->getComponent<CollisionComponent>();
             std::shared_ptr<CollisionComponent> cc2 = gObj2->getComponent<CollisionComponent>();
             cc1->update(deltaTime);
             cc2->update(deltaTime);
 //            if (cc1->getEllipsoidCollider()->canCollide(m_uniformGrid, cc2->getEllipsoidCollider())) {
-            if (cc1->getRay()) { cc1->getRay()->intersect(cc2->getEllipsoidCollider());}
-            else if (cc2->getRay()) { cc2->getRay()->intersect(cc1->getEllipsoidCollider());}
+            if (cc1->getRay()) { cc1->getRay()->intersect(cc2->getEllipsoidCollider(), deltaTime);}
+            else if (cc2->getRay()) { cc2->getRay()->intersect(cc1->getEllipsoidCollider(), deltaTime);}
             else {
                 cc1->collideEllipsoid(cc2);
             }

@@ -1,9 +1,13 @@
 #ifndef RAYCAST_H
 #define RAYCAST_H
 
+#include "Graphics/global.h"
 #include <memory>
 #include "Engine/ellipsecollider.h"
+#include "Engine/gameobject.h"
+#include "Engine/healthcomponent.h"
 #include "Engine/transformcomponent.h"
+#include "GLFW/glfw3.h"
 #include "glm/vec3.hpp"
 #include "triangle.h"
 
@@ -15,15 +19,13 @@ public:
     std::weak_ptr<GameObject> closestObj = std::make_shared<GameObject>();
     glm::vec3 p;
     glm::vec3 d;
+    bool isAutomaticWeapon = false;
+    float dps = 100.0;
+    void setWeaponAutomatic(bool isAutomatic) {isAutomaticWeapon = isAutomatic;}
     Ray(glm::vec3 p, glm::vec3 d) : p(p), d(d) {}
     void reset(){minT = 999999.0f; closestObj = std::make_shared<GameObject>();}
-    void intersect(std::shared_ptr<EllipseCollider> ellipsoid) {
+    void intersect(std::shared_ptr<EllipseCollider> ellipsoid, float deltaTime) {
         if (ellipsoid->ignoreRaycast) return;
-        // Print the contents of vector p
-        std::cout << "p: (" << p.x << ", " << p.y << ", " << p.z << ")" << std::endl;
-
-        // Print the contents of vector d
-        std::cout << "d: (" << d.x << ", " << d.y << ", " << d.z << ")" << std::endl;
         float t0, t1; // Solutions for t if the ray intersects the sphere
 #if 0 \
     // Geometric solution
@@ -55,9 +57,19 @@ public:
         if (t0 >= 0.0 && t0 < minT) {
             minT = t0;
             closestObj = ellipsoid->m_transform->getParent();
-            std::cout << minT << std::endl;
             if (!closestObj.expired()) {
-                std::cout << "closestObj is pointing to a valid GameObject" << std::endl;
+                if (closestObj.lock()->hasComponent<HealthComponent>()) {
+                    if (isAutomaticWeapon) {
+                        if (Global::input.actionHeld(GLFW_MOUSE_BUTTON_LEFT)) {
+                            closestObj.lock()->getComponent<HealthComponent>()->takeDamage(dps * deltaTime);
+                        }
+                    } else {
+                        if (Global::input.actionJustPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+                            closestObj.lock()->getComponent<HealthComponent>()->takeDamage(dps);
+                        }
+                    }
+
+                }
             }
         }
     }
