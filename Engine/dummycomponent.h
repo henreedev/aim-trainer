@@ -13,11 +13,11 @@ public:
     bool hasGravity;
     const float minStrafe = 0.4f;
     const float maxStrafe = 1.5f;
-    float strafeTimer = 1.0f;
+    float strafeTimer = 0.5f;
     float gravity;
     float y_vel = 0.0f;
-    bool isGoingLeft = false;
-    const float speed = 1.0;
+    bool isGoingLeft = bool(Random::generateRandomInt(0, 1));
+    const float speed = 3.0f;
 
     DummyComponent(std::weak_ptr<GameObject> parent_weak, Scenario scenario, bool hasGravity, float gravity)
         : scenario(scenario), hasGravity(hasGravity), gravity(gravity) {
@@ -36,6 +36,7 @@ public:
     }
 
     void update(float deltaTime) {
+        std::cout << "updating" << std::endl;
         strafeTimer -= deltaTime;
         if (strafeTimer < 0) {
             pickDuration();

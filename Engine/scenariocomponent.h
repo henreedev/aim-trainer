@@ -20,6 +20,10 @@ public:
     Scenario scenario;
     void makeGrid();
     void makeReact();
+    void makeBounce();
+    void makeClose();
+    void makeFar();
+    void makeMany();
     ScenarioComponent(std::weak_ptr<GameObject> parent_weak, Scenario scenario, float highScore)
         : scenario(scenario), highScore(highScore)
     {

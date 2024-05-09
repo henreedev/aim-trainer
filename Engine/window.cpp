@@ -31,7 +31,7 @@ int Window::start(int appId){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
-    m_GLFWwindow = glfwCreateWindow(640, 480, "CS1950U Engine", NULL, NULL);
+    m_GLFWwindow = glfwCreateWindow(1280, 960, "CS1950U Engine", NULL, NULL);
     if (!m_GLFWwindow)
     {
         std::cout<<"Window Creation Failed :("<<std::endl;
@@ -41,6 +41,24 @@ int Window::start(int appId){
     m_windowAllocated = true;
 
     glfwMakeContextCurrent(m_GLFWwindow);
+
+    // Get the primary monitor
+    GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+    if (!primaryMonitor) {
+        glfwTerminate();
+        return -1;
+    }
+
+    // Get the video mode of the primary monitor
+    const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
+    if (!videoMode) {
+        glfwTerminate();
+        return -1;
+    }
+
+    // Switch the window to fullscreen mode
+//    glfwSetWindowMonitor(m_GLFWwindow, primaryMonitor, 0, 0, videoMode->width, videoMode->height, videoMode->refreshRate);
+
 
     Global::graphics.initializeGLEW(); // IMPORTANT: Can't make ANY OpenGL calls before this occurs!
     Global::graphics.initialize();

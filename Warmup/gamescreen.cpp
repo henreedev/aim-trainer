@@ -62,7 +62,7 @@ void GameScreen::update(double deltaTime){
         reset();
         loadScenario(Scenario::TRACK_MANY);
         GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
-        scenDesc = "Tracking: Long Range";
+        scenDesc = "Tracking: Trio";
     } else if (Global::input.actionJustPressed(GLFW_KEY_4)) {
         reset();
         loadScenario(Scenario::FLICK_GRID);
@@ -77,7 +77,7 @@ void GameScreen::update(double deltaTime){
         reset();
         loadScenario(Scenario::FLICK_BOUNCE);
         GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = false;
-        scenDesc = "Clicking: Bounce";
+        scenDesc = "Clicking: Dodge";
     } else if (Global::input.actionJustPressed(GLFW_KEY_7)) {
         reset();
         loadScenario(Scenario::SWITCH_360);

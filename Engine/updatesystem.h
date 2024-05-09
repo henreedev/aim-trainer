@@ -2,6 +2,7 @@
 #define UPDATESYSTEM_H
 
 #include "Engine/System.h"
+#include "Engine/dummycomponent.h"
 #include "Engine/gameobject.h"
 #include "Engine/scenariocomponent.h"
 
@@ -15,6 +16,11 @@ public:
 
                 std::shared_ptr<ScenarioComponent> scenarioComponent = gObj->getComponent<ScenarioComponent>();
                 scenarioComponent->update(deltaTime);
+            }
+            if (gObj->hasComponent<DummyComponent>())  {
+
+                std::shared_ptr<DummyComponent> dummyComponent = gObj->getComponent<DummyComponent>();
+                dummyComponent->update(deltaTime);
             }
         };
     }
