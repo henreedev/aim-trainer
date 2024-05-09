@@ -24,7 +24,8 @@ private:
     std::shared_ptr<Shape> m_cube;
     std::shared_ptr<ModelTransform> m_modelMat;
     std::vector<std::shared_ptr<Light>> m_lights;
-
+    std::string scenDesc;
+    std::vector<glm::vec3> mapTris;
     bool m_key_w_held;
     bool m_key_s_held;
     bool m_key_a_held;
@@ -45,6 +46,8 @@ public:
     static std::shared_ptr<GameObject> ray;
     static Scenario currScen;
     static int dummiesAlive;
+    static int score;
+    static float timer;
     GameScreen();
 
     void reset();

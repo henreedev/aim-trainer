@@ -13,7 +13,7 @@
 
 class DummyMaker {
 public:
-    static std::shared_ptr<GameObject> makeDummy(glm::vec3 position, float health, float scale);
+    static std::shared_ptr<GameObject> makeDummy(glm::vec3 position, float health, float scale, Scenario scenario, bool hasMovement, bool hasGravity);
 };
 
 class ScenarioMaker {
@@ -23,6 +23,7 @@ public:
         std::weak_ptr<GameObject> scen_weak = scen;
         std::shared_ptr<ScenarioComponent> sc = std::make_shared<ScenarioComponent>(scen_weak, type, highScore);
         scen->addComponent<ScenarioComponent>(sc);
+        sc->begin();
         return scen;
     }
 };

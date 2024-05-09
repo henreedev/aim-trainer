@@ -131,6 +131,7 @@ add_executable(${PROJECT_NAME}
     Engine/updatesystem.h
     Engine/scenario.cpp
     Engine/randomgen.h
+    Engine/dummycomponent.h Engine/dummycomponent.cpp
 
 
 )

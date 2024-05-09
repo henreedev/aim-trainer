@@ -2,6 +2,14 @@
 #include "gameworld.h"
 #include "Warmup/gamescreen.h"
 void HealthComponent::die() {
-    GameWorld::gameWorldInstance->removeGameObject(m_parent.lock());
-    GameScreen::dummiesAlive--;
+    canDie = false;
+    auto parent = m_parent.lock();
+    if (parent) {
+        GameWorld::gameWorldInstance->removeGameObject(parent);
+        GameScreen::dummiesAlive--;
+        GameScreen::score++;
+        std::cout << "Dummy killed" << std::endl;
+    } else {
+        std::cerr << "Failed to remove dead dummy: parent is expired." << std::endl;
+    }
 }

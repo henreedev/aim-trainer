@@ -20,17 +20,25 @@ GameScreen::GameScreen()
 {
     Global::graphics.addMaterial("grass", "Resources/Images/grass.png", 0.3);
     Global::graphics.addMaterial("tile", "Resources/Images/tile.png", 0.9);
-
+    Global::graphics.addMaterial("metal", "Resources/Images/metal.png", 0.9);
+    Global::graphics.addMaterial("dirt", "Resources/Images/dirt.png", 0.2);
+    Global::graphics.addMaterial("cobble", "Resources/Images/cobble.png", 0.2);
+    mapTris = Global::graphics.addShape("test", "Resources/Meshes/Dungeon.obj");
+    scenDesc = "";
     reset();
 
 }
 
 int GameScreen::dummiesAlive = 0;
+int GameScreen::score = 0;
+float GameScreen::timer = 60.0f;
 
 Scenario GameScreen::currScen;
 
 void GameScreen::loadScenario(Scenario scenario) {
     currScen = scenario;
+    score = 0;
+    timer = 60.0f;
     m_gameWorld->addGameObject(ScenarioMaker::makeScenario(scenario, 0.0));
 
 
@@ -44,57 +52,80 @@ void GameScreen::update(double deltaTime){
         reset();
         loadScenario(Scenario::TRACK_CLOSE);
         GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+        scenDesc = "Tracking: Close Range";
     } else if (Global::input.actionJustPressed(GLFW_KEY_2)) {
         reset();
         loadScenario(Scenario::TRACK_FAR);
         GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+        scenDesc = "Tracking: Long Range";
     } else if (Global::input.actionJustPressed(GLFW_KEY_3)) {
         reset();
         loadScenario(Scenario::TRACK_MANY);
         GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+        scenDesc = "Tracking: Long Range";
     } else if (Global::input.actionJustPressed(GLFW_KEY_4)) {
         reset();
         loadScenario(Scenario::FLICK_GRID);
         GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = false;
+        scenDesc = "Clicking: Grid";
     } else if (Global::input.actionJustPressed(GLFW_KEY_5)) {
         reset();
         loadScenario(Scenario::FLICK_REACT);
         GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = false;
+        scenDesc = "Clicking: React";
     } else if (Global::input.actionJustPressed(GLFW_KEY_6)) {
         reset();
         loadScenario(Scenario::FLICK_BOUNCE);
         GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = false;
+        scenDesc = "Clicking: Bounce";
     } else if (Global::input.actionJustPressed(GLFW_KEY_7)) {
         reset();
         loadScenario(Scenario::SWITCH_360);
         GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+        scenDesc = "Switching: 360";
     } else if (Global::input.actionJustPressed(GLFW_KEY_8)) {
         reset();
         loadScenario(Scenario::SWITCH_SEQUENTIAL);
         GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+        scenDesc = "Switching: Sequential";
     } else if (Global::input.actionJustPressed(GLFW_KEY_9)) {
         reset();
         loadScenario(Scenario::SWITCH_GRAVITY);
         GameScreen::ray->getComponent<CollisionComponent>()->getRay()->isAutomaticWeapon = true;
+        scenDesc = "Switching: Bounce";
     }
-    std::cout << dummiesAlive << " dummies alive" << std::endl;
+//    std::cout << dummiesAlive << " dummies alive" << std::endl;
 
 }
 
 void GameScreen::draw(){
-    Global::graphics.setClearColor(glm::vec3(0.0f, 0.5f, 0.8f));
+    Global::graphics.setClearColor(glm::vec3(0.38f, 0.28f, 0.49f));
     Global::graphics.clearScreen(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     Global::graphics.bindShader("phong");
     Global::graphics.setGlobalData(glm::vec3(0.75f));
     m_gameWorld->draw();
-    if (tc->getPos().y > 7){
-        Global::graphics.bindShader("text");
-        Global::graphics.drawUIText(Global::graphics.getFont("opensans"), "You reached the top!",
-                                    glm::ivec2(Global::graphics.getFramebufferSize().x / 2, Global::graphics.getFramebufferSize().y / 2),
-                                    AnchorPoint::TopCenter,
-                                    Global::graphics.getFramebufferSize().x,
-                                    0.8f, 0.1f, glm::vec3(.8, .8, 1));
-    }
+    Global::graphics.bindShader("text");
+    Global::graphics.drawUIText(Global::graphics.getFont("opensans"), "+",
+                                glm::ivec2(Global::graphics.getFramebufferSize().x, Global::graphics.getFramebufferSize().y / 2.0f),
+                                AnchorPoint::TopCenter,
+                                Global::graphics.getFramebufferSize().x,
+                                0.8f, 0.1f, glm::vec3(.8, .8, 1));
+    Global::graphics.drawUIText(Global::graphics.getFont("opensans"), scenDesc,
+                                glm::ivec2(Global::graphics.getFramebufferSize().x / 1.2f, Global::graphics.getFramebufferSize().y/1.02f ),
+                                AnchorPoint::TopCenter,
+                                Global::graphics.getFramebufferSize().x,
+                                1.0f, 0.1f, glm::vec3(.8, .8, 1));
+    Global::graphics.drawUIText(Global::graphics.getFont("opensans"), "[ " + std::to_string(score) + " ]",
+                                glm::ivec2(Global::graphics.getFramebufferSize().x / 1.05f, Global::graphics.getFramebufferSize().y/1.13f ),
+                                AnchorPoint::TopCenter,
+                                Global::graphics.getFramebufferSize().x,
+                                1.0f, 0.1f, glm::vec3(.8, .8, 1));
+    Global::graphics.drawUIText(Global::graphics.getFont("opensans"), std::to_string(timer).substr(0, 4),
+                                glm::ivec2(Global::graphics.getFramebufferSize().x / 1.05f, Global::graphics.getFramebufferSize().y/1.07f ),
+                                AnchorPoint::TopCenter,
+                                Global::graphics.getFramebufferSize().x,
+                                1.0f, 0.1f, glm::vec3(.8, .8, 1));
+    Global::graphics.bindShader("phong");
 }
 
 void GameScreen::reset() {
@@ -105,7 +136,7 @@ void GameScreen::reset() {
     tc = make_shared<TransformComponent>(player_weak, glm::vec3(0, 3, 0), 2.0);
     player->addComponent<TransformComponent>(tc);
     player->addComponent<DrawComponent>(make_shared<DrawComponent>(player_weak, "sphere", "grass"));
-    shared_ptr<CameraComponent> cc = make_shared<CameraComponent>(player_weak, 0.015, true, true);
+    shared_ptr<CameraComponent> cc = make_shared<CameraComponent>(player_weak, 0.005, true, true);
     player->addComponent<CameraComponent>(cc);
 
     std::shared_ptr<EllipseCollider> collider = std::make_shared<EllipseCollider>(tc);
@@ -137,14 +168,14 @@ void GameScreen::reset() {
     shared_ptr<GameObject> obstacle = make_shared<GameObject>();
     weak_ptr<GameObject> obstacle_weak = obstacle;
     shared_ptr<ModelTransform> mesh_transform = make_shared<ModelTransform>();
-    mesh_transform->setPos(glm::vec3(0, 0.5f, 0));
+    mesh_transform->setPos(glm::vec3(-5, 0, 0));
     mesh_transform->setScale(glm::vec3(1.0, 1.0, 1.0));
     shared_ptr<TransformComponent> o_tc = make_shared<TransformComponent>(obstacle_weak, mesh_transform);
     obstacle->addComponent(o_tc);
-    shared_ptr<TriMesh> trimesh = MeshLoader::getMeshFromVertices(Global::graphics.addShape("test", "Resources/Meshes/environment3.obj"), mesh_transform);
+    shared_ptr<TriMesh> trimesh = MeshLoader::getMeshFromVertices(mapTris, mesh_transform);
 //    MeshLoader::addNavmeshToTrimesh(Global::graphics.addShape("test_navmesh", "Resources/Meshes/environment3nav.obj"), mesh_transform, trimesh);
 //    AiSystem::navMesh = trimesh->navmesh;
-    obstacle->addComponent(make_shared<DrawComponent>(obstacle_weak, "test", "tile"));
+    obstacle->addComponent(make_shared<DrawComponent>(obstacle_weak, "test", "cobble"));
 
     shared_ptr<CollisionComponent> o_coc = make_shared<CollisionComponent>(obstacle_weak, trimesh);
     obstacle->addComponent(o_coc);
@@ -215,7 +246,7 @@ void GameScreen::reset() {
     shared_ptr<CollisionComponent> ray_coc = make_shared<CollisionComponent>(ray_weak, ray_collider);
     ray->addComponent<CollisionComponent>(ray_coc);
 
-    shared_ptr<Light> light = std::make_shared<Light>(LightType::POINT, glm::vec3(1, 0, 0), glm::vec3(1, 1, 1));
+    shared_ptr<Light> light = std::make_shared<Light>(LightType::POINT, glm::vec3(0.5, 0.2, 1.0), glm::vec3(1, 1, 1));
     light->setType(LightType::POINT);
     light->setPos(glm::vec3(0, 1, 0));
     light->setColor(glm::vec3(0.9, 0, 0));
@@ -237,7 +268,7 @@ void GameScreen::reset() {
 //    m_gameWorld->addGameObject(ball);
 //    m_gameWorld->addGameObject(enemy);
 //    m_gameWorld->addGameObject(floor);
-    DummyMaker::makeDummy(glm::vec3(1, 4, 1), 100, 1);
+//    DummyMaker::makeDummy(glm::vec3(1, 4, 1), 100, 1);
     m_gameWorld->addGameObject(ray);
 
 }

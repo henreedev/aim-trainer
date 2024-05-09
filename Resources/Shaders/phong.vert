@@ -18,6 +18,5 @@ void main() {
     worldSpace_norm = vec3(transpose(inverse(model))*vec4(norm, 0.0));
     tex_coord = uv;
     vertColor = color;
-
     gl_Position = projection*view*model*vec4(pos, 1.0);
 }

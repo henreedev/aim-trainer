@@ -14,9 +14,10 @@ public:
         m_parent = parent_weak;
     }
 
+    bool canDie = true;
     void takeDamage(float damage) {
         health -= damage;
-        if (health <= 0) {
+        if (health <= 0 and canDie) {
             die();
         }
     }

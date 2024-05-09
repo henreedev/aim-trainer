@@ -3,6 +3,7 @@
 #include "Engine/charactercontrollercomponent.h"
 #include "Engine/collision.h"
 #include "Engine/cylindercollider.h"
+#include "Engine/dummycomponent.h"
 #include "Engine/gameobject.h"
 #include "Engine/transformcomponent.h"
 #include "Engine/ellipsecollider.h"
@@ -87,6 +88,9 @@ void CollisionComponent::collideMesh(std::shared_ptr<CollisionComponent> other) 
         m_transform->setPos(res.finalPos);
         if (m_parent.lock()->hasComponent<CharacterControllerComponent>()) {
             m_parent.lock()->getComponent<CharacterControllerComponent>()->onCollision(res);
+        }
+        if (m_parent.lock()->hasComponent<DummyComponent>()) {
+            m_parent.lock()->getComponent<DummyComponent>()->bounceOnCollision();
         }
         update(0);
         other->update(0);

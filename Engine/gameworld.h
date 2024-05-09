@@ -8,6 +8,7 @@
 #include "Engine/collisioncomponent.h"
 #include "Engine/collisionsystem.h"
 #include "Engine/drawsystem.h"
+#include "Engine/dummycomponent.h"
 #include "Engine/updatesystem.h"
 #include "charactercontrollercomponent.h"
 #include "drawcomponent.h"
@@ -66,12 +67,21 @@ public:
             if (hasSystem<UpdateSystem>()) {
                 getSystem<UpdateSystem>()->addGameObject(gameObject);
             }
+        } else if (gameObject->hasComponent<DummyComponent>()) {
+            if (hasSystem<UpdateSystem>()) {
+                getSystem<UpdateSystem>()->addGameObject(gameObject);
+            }
         }
 
     }
 
     void removeGameObject(std::shared_ptr<GameObject> gameObject) {
-        m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), gameObject), m_objects.end());
+        // Use std::remove to move the object to the end of the vector
+        auto newEnd = std::remove(m_objects.begin(), m_objects.end(), gameObject);
+
+        // Erase the moved elements from the vector
+        m_objects.erase(newEnd, m_objects.end());
+
         if (gameObject->hasComponent<CharacterControllerComponent>()) {
             if (hasSystem<CharacterControllerSystem>()) {
                 getSystem<CharacterControllerSystem>()->removeGameObject(gameObject);
@@ -99,6 +109,10 @@ public:
             }
         }
         if (gameObject->hasComponent<ScenarioComponent>()) {
+            if (hasSystem<UpdateSystem>()) {
+                getSystem<UpdateSystem>()->removeGameObject(gameObject);
+            }
+        } else if (gameObject->hasComponent<DummyComponent>()) {
             if (hasSystem<UpdateSystem>()) {
                 getSystem<UpdateSystem>()->removeGameObject(gameObject);
             }
@@ -150,8 +164,6 @@ public:
         if (hasSystem<AiSystem>()) getSystem<AiSystem>()->update(deltaTime);
         // Generic update system
         if (hasSystem<UpdateSystem>()) getSystem<UpdateSystem>()->update(deltaTime);
-
-
     }
 
     void draw(){
